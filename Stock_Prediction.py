@@ -118,4 +118,23 @@ predictions = scaler.inverse_transform(predictions)
 
 # Get the root mean squared error (RMSE)
 rmse = np.sqrt(np.mean(((predictions - y_test)**2)))
-print(rmse)
+# print(rmse)
+
+# Plot the data
+
+train = data[:training_data_length]
+valid = data[training_data_length:]
+valid['Predictions'] = predictions
+
+# Visualize the model
+
+plt.figure(figsize=(16,8))
+plt.title('Model')
+plt.xlabel('Date', fontsize=(18))
+plt.ylabel('Close Price USD ($)', fontsize=18)
+plt.plot(train['Close'])
+plt.plot(valid[['Close', 'Predictions']])
+plt.legend(['Train', 'Valid', 'Predicitons'], loc='lower right')
+plt.show()
+
+print(valid)
