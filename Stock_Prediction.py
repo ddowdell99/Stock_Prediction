@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 plt.style.use('fivethirtyeight')
 
 # Grab the stock quote
-df = pdr.get_data_yahoo('AAPL', start='2012-01-01', end='2023-01-16')
+df = pdr.get_data_yahoo('SPY', start='2012-01-01', end='2023-01-24')
 
 # Show Data
 # print(df)
@@ -43,7 +43,7 @@ data = df.filter(['Close'])
 dataset = data.values
 
 # Grab number of rows to train the model on
-training_data_length = math.ceil(len(dataset) * .8) # Going to train on 80% of the data *** can be adjusted.
+training_data_length = math.ceil(len(dataset) *.8 ) # Going to train on 80% of the data *** can be adjusted.
 
 # Scale the data (Turning all the data to numbers between 0 and 1, helps with the modeling and scaling of data)
 
@@ -137,4 +137,46 @@ plt.plot(valid[['Close', 'Predictions']])
 plt.legend(['Train', 'Valid', 'Predicitons'], loc='lower right')
 plt.show()
 
-print(valid)
+
+# print(valid)
+
+# Grab the quote
+quoted_stock = pdr.get_data_yahoo('SPY', start='2012-01-01', end='2023-01-24')
+
+# Create new dataframe
+new_df = quoted_stock.filter(['Close'])
+
+# Get the last 60 day closing price values and convert the df to an array
+
+last_60_days = new_df[-60:].values
+
+# Scale data to be values between 0 and 1
+
+last_60_days_scaled = scaler.transform(last_60_days)
+
+# Create an empty list
+
+X_test = []
+
+# Append past 60 days to list
+
+X_test.append(last_60_days_scaled)
+
+# Convert the X_test data to numpy array
+
+X_test = np.array(X_test)
+
+# Reshape the data to be 3d
+
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+# Get the predicted scaled price
+
+predicted_price = model.predict(X_test)
+predicted_price = scaler.inverse_transform(predicted_price)
+
+print(f'Predicted Price: ${predicted_price}')
+
+actual_price = pdr.get_data_yahoo('SPY', start='2023-01-25', end='2023-01-26')
+
+print(f'Actual Price: ${actual_price["Close"]}')
